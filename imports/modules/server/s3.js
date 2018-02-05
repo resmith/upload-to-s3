@@ -16,11 +16,25 @@ export default {
     const sanitizedUrl = file.url.replace(sanitizedEmailAddress, file.emailAddress).replace(sanitizedFileName, file.fileName);
 
     s3.deleteObject({
-      Bucket: 'rlives-test',
+      Bucket: 'rlives-test3',
       Key: sanitizedUrl.replace('https://tmc-react-s3.s3-us-west-2.amazonaws.com/', ''),
     }, Meteor.bindEnvironment((error) => {
       if (error) console.warn(error);
       if (!error && callback) callback(file.url);
     }));
   },
+};
+
+export const getSignedUrl = (file) => {
+// export function getSignedUrl(file) {
+
+  const params = { Bucket: 'rlives-test3', Key: file };
+
+  const signedUrl = s3.getSignedUrl('getObject', params);
+  s3.getSignedUrl('getObject', params, function (err, signedUrl) {
+    console.log('getSignedUrl input file:',file);
+    console.log('getSignedUrl output signedUrl:',signedUrl);
+    return signedUrl;
+  });
+
 };

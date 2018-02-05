@@ -1,0 +1,34 @@
+{
+  "Id": "Policy1517700583163",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1517700529000",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::rlives-test3/*",
+      "Condition": {
+        "StringLike": {
+          "aws:Referer": "http://localhost:3000/*"
+        }
+      },
+      "Principal": "*"
+    },
+    {
+      "Sid": "Stmt1517700578076",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Effect": "Deny",
+      "Resource": "arn:aws:s3:::rlives-test3/*",
+      "Condition": {
+        "StringNotLike": {
+          "aws:Referer": "http://localhost:3000/*"
+        }
+      },
+      "Principal": "*"
+    }
+  ]
+}

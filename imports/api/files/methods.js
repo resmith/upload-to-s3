@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import Files from './files';
 import S3 from '../../modules/server/s3';
+import { getSignedUrl } from '../../modules/server/s3';
 
 Meteor.methods({
   'files.store': function filesStoreMethod(file) {
@@ -12,6 +13,7 @@ Meteor.methods({
     const sanitizedUrl =
     file.url.replace(email, `${encodeURIComponent(email)}`)
     .replace(file.name, `${s3PublicUrl(file.name)}`);
+    console.log('files.store url:', url);
     return Files.insert({ userId: this.userId, url: sanitizedUrl, fileName: file.name });
   },
   'files.delete': function filesStoreMethod(fileId) {
@@ -27,4 +29,10 @@ Meteor.methods({
 
     throw new Meteor.Error('500', 'Must be logged in to do that!');
   },
+  'awss3.getSignedUrl': function s3getSignedUrl(key) {
+    check(key, String);
+    return getSignedUrl(key);
+
+    // throw new Meteor.Error('500', 'Must be logged in to do that!');
+  }
 });

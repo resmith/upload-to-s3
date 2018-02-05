@@ -20,6 +20,10 @@ const FilesSchema = new SimpleSchema({
     type: String,
     label: 'The ID of the owner of this file.',
   },
+  key: {
+    type: String,
+    label: 'The Amazon S3 key for this file.',
+  },
   url: {
     type: String,
     label: 'The Amazon S3 URL for this file.',

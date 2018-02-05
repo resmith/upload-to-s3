@@ -3,6 +3,7 @@ import { composeWithTracker } from 'react-komposer';
 import { ListGroup, ListGroupItem, Alert } from 'react-bootstrap';
 import { Meteor } from 'meteor/meteor';
 import { Bert } from 'meteor/themeteorchef:bert';
+
 import Files from '../../api/files/files';
 import Loading from './Loading';
 
@@ -18,22 +19,32 @@ const deleteObject = (_id) => {
   }
 };
 
-const FileList = ({ files }) => (
-  <div className="Files">
-    {files.length ? <ListGroup>
-      {files.map(({ _id, url }) => (
-        <ListGroupItem key={url}>
-          <a href={url} target="_blank">{url}</a>
-          <i onClick={() => { deleteObject(_id); }} className="fa fa-remove" />
-        </ListGroupItem>
-      ))}
-    </ListGroup> : <Alert bsStyle="warning">No files yet. Try uploading something!</Alert>}
-  </div>
-);
+const FileList = ({ files }) => {
 
-FileList.propTypes = {
-  files: PropTypes.array,
-};
+  return (
+    <div className="Files">
+      {files.length ? <ListGroup>
+        {files.map(({ _id, url, fileName }) => (
+          <ListGroupItem key={_id}>
+            <a href={ url } target="_blank">
+            {fileName + '- publicURL'}
+          </a>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href={ Meteor.call('awss3.getSignedUrl',url)} target="_blank">
+          {fileName + '- signedUrl'}
+        </a>
+            <i onClick={() => { deleteObject(_id); }} className="fa fa-remove" />
+          </ListGroupItem>
+        ))}
+      </ListGroup> : <Alert bsStyle="warning">No files yet. Try uploading something!</Alert>}
+    </div>
+  );
+
+  FileList.propTypes = {
+    files: PropTypes.array,
+  };
+
+}
 
 const composer = (props, onData) => {
   const subscription = Meteor.subscribe('files');
