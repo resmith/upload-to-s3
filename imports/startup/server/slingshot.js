@@ -5,17 +5,17 @@ import Files from '../../api/files/files';
 
 Slingshot.fileRestrictions('Uploader', {
   allowedFileTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg', 'image/gif', 'image/svg+xml'],
-  maxSize: 1 * 1024 * 1024, // 1MB limit (use null for unlimited)
+  maxSize: 9 * 1024 * 1024, // 1MB limit (use null for unlimited)
 });
 
 Slingshot.createDirective('Uploader', Slingshot.S3Storage, {
-  bucket: 'rlives-test3',
-  acl: 'public-read',
-  region: 'us-west-1',
+  bucket: Meteor.settings.private.s3Bucket,
+  acl: Meteor.settings.private.s3Acl,
+  region: Meteor.settings.private.s3Region,
   authorize() {
     if (!this.userId) throw new Meteor.Error('need-login', 'You need to be logged in to upload files!');
     const userFileCount = Files.find({ userId: this.userId }).count();
-    return userFileCount < 3;
+    return userFileCount < 20;
   },
   key(file) {
     const user = Meteor.users.findOne(this.userId);

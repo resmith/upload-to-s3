@@ -1,50 +1,32 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { composeWithTracker } from 'react-komposer';
-import { ListGroup, ListGroupItem, Alert } from 'react-bootstrap';
+import { ListGroup, Alert } from 'react-bootstrap';
 import { Meteor } from 'meteor/meteor';
-import { Bert } from 'meteor/themeteorchef:bert';
 
 import Files from '../../api/files/files';
+import FileListLine from './FilesListLine';
 import Loading from './Loading';
 
-const deleteObject = (_id) => {
-  if (confirm('Are you sure? This is permanent!')) {
-    Meteor.call('files.delete', _id, (error) => {
-      if (error) {
-        Bert.alert(error.reason, 'danger');
-      } else {
-        Bert.alert('File deleted!', 'success');
-      }
-    });
-  }
-};
-
-const FileList = ({ files }) => {
-
-  return (
+const FileList = ({ files }) => (
     <div className="Files">
       {files.length ? <ListGroup>
-        {files.map(({ _id, url, fileName }) => (
-          <ListGroupItem key={_id}>
-            <a href={ url } target="_blank">
-            {fileName + '- publicURL'}
-          </a>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a href={ Meteor.call('awss3.getSignedUrl',url)} target="_blank">
-          {fileName + '- signedUrl'}
-        </a>
-            <i onClick={() => { deleteObject(_id); }} className="fa fa-remove" />
-          </ListGroupItem>
+        {files.map(({ _id, url, fileName, s3Key }) => (
+          <FileListLine
+            key={_id}
+            _id={_id}
+            url={url}
+            fileName={fileName}
+            s3Key={s3Key}
+          />
         ))}
       </ListGroup> : <Alert bsStyle="warning">No files yet. Try uploading something!</Alert>}
     </div>
-  );
+);
 
-  FileList.propTypes = {
-    files: PropTypes.array,
-  };
-
-}
+FileList.propTypes = {
+  files: PropTypes.array,
+};
 
 const composer = (props, onData) => {
   const subscription = Meteor.subscribe('files');
@@ -53,5 +35,6 @@ const composer = (props, onData) => {
     onData(null, { files });
   }
 };
+
 
 export default composeWithTracker(composer, Loading)(FileList);
